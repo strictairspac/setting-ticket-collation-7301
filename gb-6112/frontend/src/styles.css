@@ -115,3 +115,27 @@ td a[aria-current=true] { font-weight: 750; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* 扫码回执对账 */
+.reconcile-body { display: grid; gap: 1rem; min-width: 0; }
+.reconcile-form { display: grid; gap: .85rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
+.reconcile-form input[type=file] { padding: .4rem; }
+.gate { padding: .7rem .9rem; border-left: .22rem solid currentColor; background: var(--tint); overflow-wrap: anywhere; }
+.gate-ok { color: var(--accent); }
+.gate-locked { color: var(--muted); }
+.tag {
+  display: inline-block; width: fit-content; font-size: .82rem; font-weight: 700;
+  padding: .16rem .55rem; border: 1px solid currentColor; border-radius: 999px; white-space: nowrap;
+}
+.tag-ok { color: oklch(.42 .11 150); background: oklch(.94 .05 150); }
+.tag-warn { color: oklch(.48 .12 70); background: oklch(.95 .06 80); }
+.tag-bad { color: var(--signal); background: oklch(.94 .04 25); }
+.tag-muted { color: var(--muted); background: var(--tint); }
+.import-report, .conflict-list { display: grid; gap: .6rem; min-width: 0; }
+.conflict-list { border-left: .22rem solid var(--signal); padding-left: .85rem; }
+.receipt-history { border-top: 1px solid var(--rule); padding-top: .7rem; }
+.receipt-record { margin-top: .8rem; display: grid; gap: .45rem; }
+.receipt-record h4 { font-size: .92rem; overflow-wrap: anywhere; }
+.reconcile-tools { display: grid; gap: .7rem; align-items: end; grid-template-columns: auto minmax(0,1fr); }
+.reconcile-tools .quiet { width: auto; white-space: nowrap; }
+@media (max-width: 767px) { .reconcile-tools { grid-template-columns: 1fr; } }

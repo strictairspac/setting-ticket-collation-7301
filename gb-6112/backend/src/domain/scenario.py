@@ -30,13 +30,18 @@ def run(payload, parameter, db):
     with isolated_tables(db) as tables:
         tables.source_rows(tickets)
         planned, collision_count, repair_count, verified_count = plan(tables, tickets, parameter)
+    permitted = repair_count <= parameter
     summary = (
         f"{collision_count} 组同间冲突，改号 {repair_count} 张后全卷通过目标唯一约束。"
-        if repair_count <= parameter else f"需要改号 {repair_count} 张，预算 {parameter} 张；留待制签组处理。"
+        if permitted else f"需要改号 {repair_count} 张，预算 {parameter} 张；留待制签组处理。"
     )
     return {
         "summary": summary,
         "metrics": {"冲突组": collision_count, "需改号": repair_count, "通过试写": verified_count},
+        # 预算足够时全卷都被目标唯一索引试写并接受，交接单才可核销。
+        "trial_passed": permitted,
+        "all_verified": permitted,
+        "handover_ready": permitted,
         "rows": [
             {"工票 ID": ticket.id, "工作间": ticket.workshop, "原票号": ticket.code, "目标票号": proposed, "动作": action}
             for ticket, proposed, action in planned

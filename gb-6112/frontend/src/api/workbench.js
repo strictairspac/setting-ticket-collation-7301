@@ -10,6 +10,11 @@ export const api = {
   enqueue: (id, data) => request(`/cases/${id}/runs`, {method: "POST", data}),
   review: id => request(`/runs/${id}/review`),
   submitReview: (id, data) => request(`/runs/${id}/review`, {method: "POST", data}),
+  reconciliation: id => request(`/runs/${id}/reconciliation`),
+  importReceipts: (id, data, receiptNo) => request(
+    `/runs/${id}/reconcile${receiptNo ? `?receipt_no=${encodeURIComponent(receiptNo)}` : ""}`,
+    {method: "POST", data},
+  ),
   export: id => request(`/runs/${id}/export`, {raw: true}),
   audit: () => request("/audit", {signal: AbortSignal.timeout(5000)}),
 };

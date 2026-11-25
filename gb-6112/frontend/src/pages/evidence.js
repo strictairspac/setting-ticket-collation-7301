@@ -3,6 +3,7 @@ import { errorText, field } from "../components/common/fields.js";
 import { empty, pageHeading, section } from "../components/common/panel.js";
 import { resultTable } from "../components/common/table.js";
 import { submit } from "../hooks/submit.js";
+import { reconcileSection } from "./reconcile.js";
 import { el } from "../utils/dom.js";
 import { cell, download, time } from "../utils/format.js";
 
@@ -45,6 +46,15 @@ export async function evidencePage(config, user, route) {
   const options = el("select", {"aria-label": "选择已完成的批次", onchange: event => {
     location.hash = `evidence/${event.target.value}`;
   }}, runs.map(item => el("option", {value: item.id, selected: item.id === run.id}, `#${item.id} ${item.case_title}`)));
+
+  let reconciliation;
+  try {
+    reconciliation = await reconcileSection(run, user);
+  } catch (error) {
+    reconciliation = section("扫码回执对账", el("p", {role: "alert", class: "feedback"},
+      `对账状态暂时无法加载：${error.message}`));
+  }
+
   return el("div", {class: "page evidence"},
     pageHeading(config.modules[3], run.case_title, button),
     issue, options,
@@ -53,5 +63,6 @@ export async function evidencePage(config, user, route) {
     el("dl", {class: "metrics"}, Object.entries(run.result.metrics).map(([label, value]) =>
       el("div", {}, el("dt", {}, label), el("dd", {}, cell(value))))),
     section("业务结果明细", run.result.rows.length ? resultTable(run.result.rows) : empty("此批次无明细。")),
-    section("复核签署", signing));
+    section("复核签署", signing),
+    reconciliation);
 }

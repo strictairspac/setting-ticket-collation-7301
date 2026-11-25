@@ -33,3 +33,18 @@ def require_role(role):
 
 operator = require_role(Role.OPERATOR)
 reviewer = require_role(Role.REVIEWER)
+
+
+def require_roles(*roles):
+    allowed = set(roles)
+
+    def authorize(user=Depends(identity)):
+        if user["role"] not in allowed:
+            raise HTTPException(403, "当前账号没有此操作权限")
+        return user
+
+    return authorize
+
+
+# 对账核销既是资料操作，也允许签署交接单的复核员当场处理；只读观察员除外。
+staff = require_roles(Role.OPERATOR, Role.REVIEWER)
